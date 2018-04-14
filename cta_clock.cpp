@@ -94,7 +94,13 @@ namespace itr::cta_clock {
 
     void draw_lower_third(FrameCanvas *canvas) {
         int x = draw_clock(canvas) + 1;
-        for (int y1 = MATRIX_ROWS; y1 > MATRIX_ROWS - 10; y1--) {
+
+        int hr_y = MATRIX_ROWS - smallFont.baseline() - 2;
+
+        for (int x1 = 0; x1 < MATRIX_COLS * MATRIX_CHAIN; x1++) {
+            canvas->SetPixel(x1, hr_y, 255, 255, 255);
+        }
+        for (int y1 = MATRIX_ROWS; y1 > hr_y - 1; y1--) {
             canvas->SetPixel(x, y1, 255, 255, 255);
         }
     }
@@ -105,7 +111,7 @@ namespace itr::cta_clock {
         time_t raw_time = time(nullptr);
         strftime(buf, 16, time_formats[raw_time % 2], localtime(&raw_time));
 
-        return rgb_matrix::DrawText(canvas, smallFont, 0, MATRIX_ROWS - 1, Color(255, 255, 255), buf);
+        return rgb_matrix::DrawText(canvas, largeFont, 0, MATRIX_ROWS - 1, Color(255, 255, 255), buf);
     }
 }
 
