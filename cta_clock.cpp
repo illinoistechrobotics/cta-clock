@@ -95,7 +95,7 @@ namespace itr::cta_clock {
     void draw_lower_third(FrameCanvas *canvas) {
         int x = draw_clock(canvas) + 1;
 
-        int hr_y = MATRIX_ROWS - smallFont.baseline() - 2;
+        int hr_y = MATRIX_ROWS - smallFont.baseline();
 
         for (int x1 = 0; x1 < MATRIX_COLS * MATRIX_CHAIN; x1++) {
             canvas->SetPixel(x1, hr_y, 255, 255, 255);
