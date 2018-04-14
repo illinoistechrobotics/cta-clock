@@ -1,0 +1,1 @@
+/usr/bin/c++      CMakeFiles/cta_clock.dir/cta_clock.cpp.o  -o cta_clock -Wl,-rpath,/home/pi/cta-clock/matrix/lib -rdynamic -lpthread -lrt -lm -lcurlpp matrix/lib/librgbmatrix.so.1 
