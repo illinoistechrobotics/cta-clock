@@ -111,7 +111,7 @@ namespace itr::cta_clock {
         time_t raw_time = time(nullptr);
         strftime(buf, 16, time_formats[raw_time % 2], localtime(&raw_time));
 
-        return rgb_matrix::DrawText(canvas, largeFont, 0, MATRIX_ROWS - 1, Color(255, 255, 255), buf);
+        return rgb_matrix::DrawText(canvas, smallFont, 0, MATRIX_ROWS - 1, Color(255, 255, 255), buf);
     }
 }
 
