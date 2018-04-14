@@ -3,12 +3,14 @@
 // For use on with Raspberry Pi + a HUB52 LED matrix display
 //
 
+#include "cta_clock.h"
 #include <iostream>
 #include "matrix/include/graphics.h"
 #include "matrix/include/led-matrix.h"
 #include <csignal>
 
-#define FONT "matrix/fonts/6x12.bdf"
+#define LARGE_FONT "matrix/fonts/6x10.bdf"
+#define SMALL_FONT "matrix/fonts/5x7.bdf"
 #define MATRIX_CHAIN 2
 #define MATRIX_ROWS 32
 #define MATRIX_COLS 64
@@ -24,6 +26,9 @@ using std::endl;
 namespace itr::cta_clock {
     RGBMatrix *matrix;
     FrameCanvas *canvas;
+
+    Font largeFont, smallFont;
+
     volatile bool interrupted = false;
 
     static int usage(char program_name[]) {
@@ -44,9 +49,12 @@ namespace itr::cta_clock {
             return usage(argv[0]);
         }
 
-        rgb_matrix::Font font;
-        if (!font.LoadFont(FONT)) {
-            std::cerr << "Couldn't load font " << FONT << std::endl;
+        if (!largeFont.LoadFont(LARGE_FONT)) {
+            std::cerr << "Couldn't load font " << LARGE_FONT << std::endl;
+            return 1;
+        }
+        if (!smallFont.LoadFont(SMALL_FONT)) {
+            std::cerr << "Couldn't load font " << SMALL_FONT << std::endl;
             return 1;
         }
 
@@ -67,15 +75,10 @@ namespace itr::cta_clock {
 
         canvas = matrix->CreateFrameCanvas();
 
-        time_t raw_time;
-
         char static_txt_buffer[LINES_ON_SCREEN][BUFFER_SIZE];
 
         sprintf(static_txt_buffer[0], " 29 State");
         sprintf(static_txt_buffer[1], "GRN Green Line");
-
-        // blink colon every second
-        const char* time_formats[2] = {"%l:%M %p", "%l %M %p"};
 
         signal(SIGTERM, interrupt_handler);
         signal(SIGINT, interrupt_handler);
@@ -83,15 +86,13 @@ namespace itr::cta_clock {
         while (!interrupted) {
             canvas->Fill(0, 0, 0);
 
-            // update clock
-            raw_time = time(nullptr);
-            strftime(static_txt_buffer[2], 64 * sizeof(char), time_formats[raw_time % 2], localtime(&raw_time));
-
             for (auto &i : static_txt_buffer) {
-                rgb_matrix::DrawText(canvas, font, x, y + font.baseline(), Color(255, 255, 255), NULL, i, 0);
-                y += font.baseline();
+                rgb_matrix::DrawText(canvas, largeFont, x, y + largeFont.baseline(), Color(255, 255, 255), NULL, i, 0);
+                y += largeFont.baseline();
             }
             y = y_orig;
+
+            draw_lower_third(canvas);
 
             canvas = matrix->SwapOnVSync(canvas);
         }
@@ -103,6 +104,22 @@ namespace itr::cta_clock {
 
         std::cout << std::endl;
         return 0;
+    }
+
+    void draw_lower_third(FrameCanvas *canvas) {
+        int x = draw_clock(canvas) + 1;
+        for (int y1 = MATRIX_ROWS; y1 > MATRIX_ROWS - 10; y1--) {
+            canvas->SetPixel(x, y1, 255, 255, 255);
+        }
+    }
+
+    int draw_clock(FrameCanvas *canvas) {
+        char buf[16];
+        const char *time_formats[2] = {"%l:%M %p", "%l %M %p"};
+        time_t raw_time = time(nullptr);
+        strftime(buf, 16, time_formats[raw_time % 2], localtime(&raw_time));
+
+        return rgb_matrix::DrawText(canvas, smallFont, 0, MATRIX_ROWS - 1, Color(255, 255, 255), buf);
     }
 }
 
