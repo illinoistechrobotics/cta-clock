@@ -8,11 +8,12 @@
 #include "matrix/include/led-matrix.h"
 #include <csignal>
 
-#define FONT "matrix/fonts/5x8.bdf"
+#define FONT "matrix/fonts/6x12.bdf"
 #define MATRIX_CHAIN 2
 #define MATRIX_ROWS 32
 #define MATRIX_COLS 64
-#define LINES 4
+#define LINES_ON_SCREEN 3
+#define BUFFER_SIZE 64
 #define MAX_X MATRIX_ROWS
 #define MAX_Y (MATRIX_COLS * MATRIX_CHAIN)
 
@@ -66,15 +67,29 @@ namespace itr::cta_clock {
 
         canvas = matrix->CreateFrameCanvas();
 
-        char* lines[LINES] = {"Line 1", "Line 2", "Line 3", "Line 4"};
+        time_t raw_time;
+
+        char static_txt_buffer[LINES_ON_SCREEN][BUFFER_SIZE];
+
+        sprintf(static_txt_buffer[0], " 29 State");
+        sprintf(static_txt_buffer[1], "GRN Green Line");
+
+        // blink colon every second
+        const char* time_formats[2] = {"%l:%M %p", "%l %M %p"};
 
         signal(SIGTERM, interrupt_handler);
         signal(SIGINT, interrupt_handler);
 
         while (!interrupted) {
             canvas->Fill(0, 0, 0);
-            for (int i = 0; i < LINES; i++) {
-                rgb_matrix::DrawText(canvas, font, x - 1, y + font.baseline(), Color(255, 255, 255), NULL, lines[i], 0);
+
+            // update clock
+            raw_time = time(nullptr);
+            strftime(static_txt_buffer[2], 64 * sizeof(char), time_formats[raw_time % 2], localtime(&raw_time));
+
+            for (auto &i : static_txt_buffer) {
+                rgb_matrix::DrawText(canvas, font, x, y + font.baseline(), Color(255, 255, 255), NULL, i, 0);
+                y += font.baseline();
             }
 
             canvas = matrix->SwapOnVSync(canvas);
