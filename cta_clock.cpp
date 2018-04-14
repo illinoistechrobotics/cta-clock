@@ -4,20 +4,6 @@
 //
 
 #include "cta_clock.h"
-#include <iostream>
-#include "matrix/include/graphics.h"
-#include "matrix/include/led-matrix.h"
-#include <csignal>
-
-#define LARGE_FONT "matrix/fonts/6x10.bdf"
-#define SMALL_FONT "matrix/fonts/5x7.bdf"
-#define MATRIX_CHAIN 2
-#define MATRIX_ROWS 32
-#define MATRIX_COLS 64
-#define LINES_ON_SCREEN 3
-#define BUFFER_SIZE 64
-#define MAX_X MATRIX_ROWS
-#define MAX_Y (MATRIX_COLS * MATRIX_CHAIN)
 
 using namespace rgb_matrix;
 using std::cout;
