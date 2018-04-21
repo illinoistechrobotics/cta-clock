@@ -26,6 +26,9 @@ namespace itr::cta_clock {
     }
 
     int main(int argc, char *argv[]) {
+        auto curl = cURLpp::Cleanup();
+
+        // Initialize matrix
         int x_orig = 0;
         int y_orig = 0;
         auto matrix_options = new RGBMatrix::Options();
@@ -51,7 +54,7 @@ namespace itr::cta_clock {
 
         matrix = rgb_matrix::CreateMatrixFromOptions(*matrix_options, *runtime_options);
 
-        if (matrix == NULL)
+        if (matrix == nullptr)
             return 1;
 
         matrix->SetBrightness(25);
@@ -83,6 +86,7 @@ namespace itr::cta_clock {
             canvas = matrix->SwapOnVSync(canvas);
         }
 
+        cURLpp::terminate();
         matrix->Clear();
         delete matrix;
         delete matrix_options;

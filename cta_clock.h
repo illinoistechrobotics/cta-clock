@@ -9,6 +9,7 @@
 #include "matrix/include/graphics.h"
 #include "matrix/include/led-matrix.h"
 #include <csignal>
+#include <curlpp/cURLpp.hpp>
 
 #define LARGE_FONT "matrix/fonts/6x10.bdf"
 #define SMALL_FONT "matrix/fonts/5x7.bdf"
