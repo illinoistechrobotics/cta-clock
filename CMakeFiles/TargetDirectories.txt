@@ -1,0 +1,3 @@
+/home/pi/cta-clock/CMakeFiles/rebuild_cache.dir
+/home/pi/cta-clock/CMakeFiles/edit_cache.dir
+/home/pi/cta-clock/CMakeFiles/cta_clock.dir

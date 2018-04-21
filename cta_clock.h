@@ -12,7 +12,7 @@
 #include <curlpp/cURLpp.hpp>
 
 #define LARGE_FONT "matrix/fonts/6x10.bdf"
-#define SMALL_FONT "matrix/fonts/5x7.bdf"
+#define SMALL_FONT "matrix/fonts/4x6.bdf"
 #define MATRIX_CHAIN 2
 #define MATRIX_ROWS 32
 #define MATRIX_COLS 64

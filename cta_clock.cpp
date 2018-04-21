@@ -66,20 +66,34 @@ namespace itr::cta_clock {
 
         char static_txt_buffer[LINES_ON_SCREEN][BUFFER_SIZE];
 
-        sprintf(static_txt_buffer[0], " 29 State");
-        sprintf(static_txt_buffer[1], "GRN Green Line");
+        char to[5];
+        char lineName[64];
+        char direction[2][64];
+
+        sprintf(to, " TO ");
+
+        sprintf(lineName, "29 State");
+        sprintf(direction[0], "Navy Pier");
+        sprintf(direction[1], "95th Red Line");
 
         signal(SIGTERM, interrupt_handler);
         signal(SIGINT, interrupt_handler);
 
         while (!interrupted) {
+            x = 0;
+            y = largeFont.baseline();
+
             canvas->Fill(0, 0, 0);
 
-            for (auto &i : static_txt_buffer) {
-                rgb_matrix::DrawText(canvas, largeFont, x, y + largeFont.baseline(), Color(255, 255, 255), NULL, i, 0);
+            rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), NULL, lineName);
+            y += largeFont.baseline();
+
+
+            for (auto &i : direction) {
+                x = rgb_matrix::DrawText(canvas, smallFont, 0, y, Color(255, 255, 255), NULL, to, 0);
+                rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), NULL, i, 0);
                 y += largeFont.baseline();
             }
-            y = y_orig;
 
             draw_lower_third(canvas);
 
@@ -97,16 +111,21 @@ namespace itr::cta_clock {
     }
 
     void draw_lower_third(FrameCanvas *canvas) {
-        int x = draw_clock(canvas) + 1;
+        int x = draw_clock(canvas);
 
-        int hr_y = MATRIX_ROWS - smallFont.baseline();
+        int hr_y = MATRIX_ROWS - smallFont.baseline() - 2;
 
-        for (int x1 = 0; x1 < MATRIX_COLS * MATRIX_CHAIN; x1++) {
+/*for (int x1 = 0; x1 < MATRIX_COLS * MATRIX_CHAIN; x1++) {
             canvas->SetPixel(x1, hr_y, 255, 255, 255);
-        }
+       }*/
         for (int y1 = MATRIX_ROWS; y1 > hr_y - 1; y1--) {
             canvas->SetPixel(x, y1, 255, 255, 255);
         }
+
+        char buf[512];
+        sprintf(buf, "This is a really long alert message that will not fit on the screen.");
+
+        rgb_matrix::DrawText(canvas, smallFont, x + 2, MATRIX_ROWS - 1, Color(255, 255, 255), buf);
     }
 
     int draw_clock(FrameCanvas *canvas) {
