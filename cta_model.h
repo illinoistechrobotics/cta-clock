@@ -17,13 +17,27 @@ using rgb_matrix::Color;
 
 namespace itr::cta_clock::providers::cta_rail {
 
-    class CTARailProvider : Provider {
+    class CTARailProvider : public Provider {
+    public:
         CTARailProvider(const char *key, const char *endpoint);
 
         ~CTARailProvider();
+
+        bool Update() override;
+
+        const char *Key, *Endpoint;
+
+        vector<CTALine> Lines;
     };
 
-    class CTALine : Line {
+    class CTALine : public Line {
+    public:
+        CTALine(int stop_id, const char *identifier, const char *name, const vector<Direction> &directions);
+
+        /**
+         * The station's Stop ID for requesting data from CTA's API
+         */
+        int StopID;
     };
 
     CTARailProvider *get_itr_cta_rail_lines();

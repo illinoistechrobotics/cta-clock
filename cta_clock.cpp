@@ -26,7 +26,7 @@ namespace itr::cta_clock {
     }
 
     int main(int argc, char *argv[]) {
-        auto curl = cURLpp::Cleanup();
+        cURLpp::Cleanup cleanup;
 
         // Initialize matrix
         int x_orig = 0;
@@ -85,13 +85,13 @@ namespace itr::cta_clock {
 
             canvas->Fill(0, 0, 0);
 
-            rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), NULL, lineName);
+            rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), nullptr, lineName);
             y += largeFont.baseline();
 
 
             for (auto &i : direction) {
-                x = rgb_matrix::DrawText(canvas, smallFont, 0, y, Color(255, 255, 255), NULL, to, 0);
-                rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), NULL, i, 0);
+                x = rgb_matrix::DrawText(canvas, smallFont, 0, y, Color(255, 255, 255), nullptr, to, 0);
+                rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), nullptr, i, 0);
                 y += largeFont.baseline();
             }
 

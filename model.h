@@ -23,7 +23,7 @@ namespace itr::cta_clock::model {
         /**
          * The current set of times
          */
-        vector<int> Times;
+        vector<Time> Times;
 
         /**
          * The destination
@@ -46,7 +46,7 @@ namespace itr::cta_clock::model {
          * @param name A longer name for the line
          * @param directions A list of all directions for the line from this stop
          */
-        Line(Color color, const char *name, vector<Direction> directions);
+        Line(const Color *color, const char *name, vector<Direction> directions);
 
         /**
          * @param identifier A short identifier for the line (2-3 chars)
@@ -54,7 +54,7 @@ namespace itr::cta_clock::model {
          * @param name A longer name for the line
          * @param directions A list of all directions for the line from this stop
          */
-        Line(const char *identifier, Color color, const char *name, vector<Direction> directions);
+        Line(const char *identifier, const Color *color, const char *name, vector<Direction> directions);
 
         ~Line();
 
@@ -81,7 +81,7 @@ namespace itr::cta_clock::model {
         /**
          * An identifying color for the line
          */
-        Color Color;
+        const Color *LineColor;
 
     };
 
@@ -91,6 +91,22 @@ namespace itr::cta_clock::model {
         vector<Line> Lines;
 
         virtual bool Update() =0;
+    };
+
+
+    struct TimeOptions {
+        bool IsDelayed : 1;
+        bool IsApproaching; 1;
+        bool IsScheduled : 1;
+        bool IsFaulty : 1;
+    };
+
+
+    class Time {
+    public:
+        time_t ArrivalTime;
+        int Run;
+        TimeOptions Options;
     };
 }
 
