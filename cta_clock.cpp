@@ -45,11 +45,11 @@ int itr::cta_clock::main(int argc, char *argv[]) {
 
     if (!largeFont.LoadFont(LARGE_FONT)) {
         std::cerr << "[main]\tCouldn't load font " << LARGE_FONT << std::endl;
-        return 1;
+        //return 1;
     }
     if (!smallFont.LoadFont(SMALL_FONT)) {
         std::cerr << "[main]\tCouldn't load font " << SMALL_FONT << std::endl;
-        return 1;
+        //return 1;
     }
 
     matrix_options->chain_length = MATRIX_CHAIN;
