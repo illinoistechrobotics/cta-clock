@@ -83,3 +83,8 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
+.vs/
+cmake-build-debug/
+CMakeSettings.json
+CMakeFiles/
+

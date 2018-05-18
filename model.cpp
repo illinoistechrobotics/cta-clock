@@ -10,7 +10,6 @@ using itr::cta_clock::model::Line;
 
 itr::cta_clock::model::Direction::Direction(const char *destination) {
     this->Destination = destination;
-    this->Times = vector<int>();
 }
 
 itr::cta_clock::model::Direction::~Direction() {

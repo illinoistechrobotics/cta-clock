@@ -15,33 +15,54 @@ using itr::cta_clock::model::Direction;
 
 using rgb_matrix::Color;
 
-namespace itr::cta_clock::providers::cta_rail {
+using std::vector;
 
-    class CTARailProvider : public Provider {
-    public:
-        CTARailProvider(const char *key, const char *endpoint);
+namespace itr {
+    namespace cta_clock {
+        namespace providers {
+            namespace cta_rail {
 
-        ~CTARailProvider();
+                class CTALine : public Line {
+                public:
+                    CTALine(int stop_id, const char *identifier, const char *name, const vector<Direction> &directions);
 
-        bool Update() override;
+                    /**
+                     * @param color A color that identifies the line
+                     * @param name A longer name for the line
+                     * @param directions A list of all directions for the line from this stop
+                     */
+                    CTALine(int stop_id, const Color *color, const char *name, vector<Direction> directions);
 
-        const char *Key, *Endpoint;
+                    /**
+                     * @param identifier A short identifier for the line (2-3 chars)
+                     * @param color A color that identifies the line
+                     * @param name A longer name for the line
+                     * @param directions A list of all directions for the line from this stop
+                     */
+                    CTALine(int stop_id, const char *identifier, const Color *color, const char *name, vector<Direction> directions);
 
-        vector<CTALine> Lines;
-    };
+                    /**
+                     * The station's Stop ID for requesting data from CTA's API
+                     */
+                    int StopID;
+                };
 
-    class CTALine : public Line {
-    public:
-        CTALine(int stop_id, const char *identifier, const char *name, const vector<Direction> &directions);
+                class CTARailProvider : public Provider {
+                public:
+                    CTARailProvider(const char *key, const char *endpoint);
 
-        /**
-         * The station's Stop ID for requesting data from CTA's API
-         */
-        int StopID;
-    };
+                    ~CTARailProvider();
 
-    CTARailProvider *get_itr_cta_rail_lines();
+                    bool Update() override;
 
+                    const char *Key, *Endpoint;
+
+                    vector<CTALine> Lines;
+                };
+
+                CTARailProvider *get_itr_cta_rail_lines();
+            }
+        }
+    }
 }
-
 #endif //CTA_CLOCK_CTA_MODEL_H

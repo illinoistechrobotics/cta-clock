@@ -21,17 +21,30 @@
 #define MAX_X MATRIX_ROWS
 #define MAX_Y (MATRIX_COLS * MATRIX_CHAIN)
 
-namespace itr::cta_clock {
+using rgb_matrix::RGBMatrix;
+using rgb_matrix::FrameCanvas;
+using rgb_matrix::Font;
 
-    static int usage(char program_name[]);
+namespace itr {
+    namespace cta_clock {
+        RGBMatrix *matrix;
 
-    void interrupt_handler(int sig);
+        FrameCanvas *canvas;
 
-    int main(int argc, char *argv[]);
+        Font largeFont, smallFont;
 
-    void draw_lower_third(rgb_matrix::FrameCanvas *canvas);
+        volatile bool interrupted = false;
 
-    int draw_clock(rgb_matrix::FrameCanvas *canvas);
+        static int usage(char program_name[]);
+
+        void interrupt_handler(int sig);
+
+        int main(int argc, char *argv[]);
+
+        void draw_lower_third(rgb_matrix::FrameCanvas *canvas);
+
+        int draw_clock(rgb_matrix::FrameCanvas *canvas);
+    }
 }
 
 #endif //CTA_CLOCK_CTA_CLOCK_H
