@@ -17,9 +17,10 @@ itr::cta_clock::model::Direction::~Direction() {
 }
 
 itr::cta_clock::model::Line::Line(const char *identifier, const char *name, vector<Direction> directions) {
+    srandom((unsigned int)time(nullptr));
     this->Identifier = identifier;
     this->Name = name;
-    this->LineColor = new Color(255, 255, 255);
+    this->LineColor = new Color((uint8_t)random(), (uint8_t)random(), (uint8_t)random());
     this->Directions = directions;
 }
 

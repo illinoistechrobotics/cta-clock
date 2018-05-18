@@ -48,7 +48,7 @@ bool CTARailProvider::Update() {
 
 CTARailProvider::~CTARailProvider() = default;
 
-CTARailProvider *get_itr_cta_rail_lines() {
+CTARailProvider *itr::cta_clock::providers::cta_rail::get_itr_cta_rail_lines() {
     auto provider = new CTARailProvider(getenv("CTA_RAIL_KEY"),
                                         "http://lapi.transitchicago.com/api/1.0/ttarrivals.aspx");
     vector<CTALine> lines;
