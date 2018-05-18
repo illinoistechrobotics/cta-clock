@@ -1,16 +1,24 @@
 //
 // CTA Train/Bus Tracker Clock
-// For use on with Raspberry Pi + a HUB52 LED matrix display
+// For use on a Raspberry Pi + a HUB52 LED matrix display
 //
 
+#define SLIDE_TIME 5000
+
+#include <curlpp/cURLpp.hpp>
 #include "cta_clock.h"
+#include "model.h"
+#include "cta_model.h"
 
 using namespace rgb_matrix;
 using std::cout;
 using std::endl;
 
+using namespace itr::cta_clock::model;
+using namespace itr::cta_clock::providers::cta_rail;
+
 static int itr::cta_clock::usage(char program_name[]) {
-    std::cout << program_name << " usage : " << std::endl;
+    cout << program_name << " usage : " << endl;
 }
 
 void itr::cta_clock::interrupt_handler(int sig) {
@@ -18,7 +26,12 @@ void itr::cta_clock::interrupt_handler(int sig) {
 }
 
 int itr::cta_clock::main(int argc, char *argv[]) {
+    cout << "[main]\tStarting up..." << endl;
     cURLpp::Cleanup cleanup();
+
+    // Initialize slideshow
+    time_t last_slide_switch = time(nullptr);
+    unsigned long num_slides, provider_id, line_id = 0;
 
     // Initialize matrix
     int x_orig = 0;
@@ -31,11 +44,11 @@ int itr::cta_clock::main(int argc, char *argv[]) {
     }
 
     if (!largeFont.LoadFont(LARGE_FONT)) {
-        std::cerr << "Couldn't load font " << LARGE_FONT << std::endl;
+        std::cerr << "[main]\tCouldn't load font " << LARGE_FONT << std::endl;
         return 1;
     }
     if (!smallFont.LoadFont(SMALL_FONT)) {
-        std::cerr << "Couldn't load font " << SMALL_FONT << std::endl;
+        std::cerr << "[main]\tCouldn't load font " << SMALL_FONT << std::endl;
         return 1;
     }
 
@@ -59,39 +72,53 @@ int itr::cta_clock::main(int argc, char *argv[]) {
     char static_txt_buffer[LINES_ON_SCREEN][BUFFER_SIZE];
 
     char to[5];
-    char lineName[64];
-    char direction[2][64];
-
     sprintf(to, " TO ");
 
-    sprintf(lineName, "29 State");
-    sprintf(direction[0], "Navy Pier");
-    sprintf(direction[1], "95th Red Line");
+    // register providers
+    cout << "[providers]\tRegistering providers..." << endl;
+    std::vector<Provider *> providers;
+    providers.push_back(get_itr_cta_rail_lines());
 
+    cout << "[providers]\t" << providers.size() << " providers registered." << endl;
+
+    // count lines
+    int num_lines = 0;
+    for (auto l : providers) {
+        num_lines += l->Lines.size();
+    }
+
+    cout << "[providers]\t" << num_lines << " lines registered." << endl;
+
+
+    // register signal handlers
     signal(SIGTERM, interrupt_handler);
     signal(SIGINT, interrupt_handler);
 
+    // begin drawing
     while (!interrupted) {
         x = 0;
         y = largeFont.baseline();
 
         canvas->Fill(0, 0, 0);
 
-        rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), nullptr, lineName);
+        // draw line name
+        rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), nullptr, providers[0]->Lines[0].Name);
         y += largeFont.baseline();
 
-
-        for (auto &i : direction) {
+        // draw directions
+        for (auto &i : providers[0]->Lines[0].Directions) {
             x = rgb_matrix::DrawText(canvas, smallFont, 0, y, Color(255, 255, 255), nullptr, to, 0);
-            rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), nullptr, i, 0);
+            rgb_matrix::DrawText(canvas, largeFont, x, y, Color(255, 255, 255), nullptr, i.Destination, 0);
             y += largeFont.baseline();
         }
 
         draw_lower_third(canvas);
 
+        // send to screen
         canvas = matrix->SwapOnVSync(canvas);
     }
 
+    // clean up
     cURLpp::terminate();
     matrix->Clear();
     delete matrix;
